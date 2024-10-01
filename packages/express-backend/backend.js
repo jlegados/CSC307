@@ -46,6 +46,11 @@ const findUserByName = (name) => {
   );
 };
 
+const addUser = (user) => {
+  users["users_list"].push(user);
+  return user;
+};
+
 // "/" route (Hello World)
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -70,6 +75,12 @@ app.get("/users/:id", (req, res) => {
   } else {
     res.send(result);
   }
+});
+
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  addUser(userToAdd);
+  res.send();
 });
 
 // Start the Express server
