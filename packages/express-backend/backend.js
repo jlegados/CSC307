@@ -51,7 +51,24 @@ const addUser = (user) => {
   return user;
 };
 
-// "/" route (Hello World)
+const deleteUserById = (id) => {
+  const originalLength = users["users_list"].length;
+  users["users_list"] = users["users_list"].filter(user => user["id"] !== id);
+  return users["users_list"].length !== originalLength;
+};
+
+app.delete("/users/:id", (req, res) => {
+  const id = req.params.id;
+  const userDeleted = deleteUserById(id);
+  
+  if (userDeleted) {
+    res.status(200).send(`User with id ${id} deleted.`);
+  } else {
+    res.status(404).send("Resource not found.");
+  }
+});
+
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -83,7 +100,6 @@ app.post("/users", (req, res) => {
   res.send();
 });
 
-// Start the Express server
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
