@@ -1,10 +1,11 @@
+import cors from "cors";
 import express from "express";
 
 const app = express();
 const port = 8000;
 
+app.use(cors());
 app.use(express.json());
-
 
 const users = {
   users_list: [
@@ -36,6 +37,7 @@ const users = {
   ]
 };
 
+// Helper functions
 const findUserById = (id) => {
   return users["users_list"].find((user) => user["id"] === id);
 };
@@ -47,8 +49,9 @@ const findUserByName = (name) => {
 };
 
 const addUser = (user) => {
-  users["users_list"].push(user);
-  return user;
+  const userWithId = { ...user, id: Math.random().toString(36).substr(2, 9) };
+  users["users_list"].push(userWithId);
+  return userWithId;
 };
 
 const deleteUserById = (id) => {
@@ -57,49 +60,46 @@ const deleteUserById = (id) => {
   return users["users_list"].length !== originalLength;
 };
 
-app.delete("/users/:id", (req, res) => {
-  const id = req.params.id;
-  const userDeleted = deleteUserById(id);
-  
-  if (userDeleted) {
-    res.status(200).send(`User with id ${id} deleted.`);
-  } else {
-    res.status(404).send("Resource not found.");
-  }
+// GET: Get all users
+app.get("/users", (req, res) => {
+  res.json(users);
 });
-
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/users", (req, res) => {
-  const name = req.query.name;
-  if (name != undefined) {
-    let result = findUserByName(name);
-    result = { users_list: result };
-    res.send(result);
-  } else {
-    res.send(users);
-  }
-});
-
-app.get("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  let result = findUserById(id);
-  if (result === undefined) {
-    res.status(404).send("Resource not found.");
-  } else {
-    res.send(result);
-  }
-});
-
+// POST: Add a new user
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  if (!userToAdd.name || !userToAdd.job) {
+    return res.status(400).send("Missing 'name' or 'job' in request body");
+  }
+  const createdUser = addUser(userToAdd);
+  res.status(201).json({ message: "User created", user: createdUser });
+});
+
+// GET: Get user by ID
+app.get("/users/:id", (req, res) => {
+  const id = req.params.id;
+  const result = findUserById(id);
+  if (!result) {
+    return res.status(404).send("User not found.");
+  }
+  res.json(result);
+});
+
+// DELETE: Remove user by ID
+app.delete("/users/:id", (req, res) => {
+  const userId = req.params.id;
+  const wasDeleted = deleteUserById(userId);
+  if (wasDeleted) {
+    return res.status(204).send(); // 204 No Content
+  }
+  res.status(404).json({ error: "User not found" });
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Server is running at http://localhost:${port}`);
 });
+

@@ -15,9 +15,10 @@ function Form(props) {
     }
   }
 
-  function submitForm() {
-    props.handleSubmit(person);
-    setPerson({ name: "", job: "" });
+  function submitForm(event) {
+    event.preventDefault(); // Prevent form from reloading the page
+    props.handleSubmit(person); // Submit the form data to the parent component
+    setPerson({ name: "", job: "" }); // Reset the form fields
   }
 
   return (
