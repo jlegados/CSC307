@@ -8,7 +8,7 @@ function MyApp() {
   useEffect(() => {
     fetchUsers()
       .then((res) => res.json())
-      .then((json) => setCharacters(json["users_list"]))
+      .then((json) => setCharacters(json))
       .catch((error) => { console.log(error); });
   }, []);
 
@@ -42,7 +42,7 @@ function MyApp() {
         }
       })
       .then(data => {
-        setCharacters([...characters, data.user]); // Add new user to state
+        setCharacters([...characters, data.user]); // MongoDB returns the user with _id
       })
       .catch(error => console.log("Error adding user:", error));
   }
@@ -51,7 +51,7 @@ function MyApp() {
     deleteUser(id)
       .then(response => {
         if (response.status === 204) {
-          setCharacters(characters.filter((character) => character.id !== id));
+          setCharacters(characters.filter((character) => character._id !== id));
         }
       })
       .catch(error => console.log("Error deleting user:", error));

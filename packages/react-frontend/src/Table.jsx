@@ -4,7 +4,7 @@ function TableHeader() {
   return (
     <thead>
       <tr>
-        <th>ID</th> {/* Add ID header */}
+        <th>ID</th>
         <th>Name</th>
         <th>Job</th>
         <th>Actions</th>
@@ -14,13 +14,13 @@ function TableHeader() {
 }
 
 function TableBody(props) {
-  const rows = props.characterData.map((row) => (
-    <tr key={row.id}>
-      <td>{row.id}</td> {/* Add ID in table row */}
+  const rows = props.characterData.map((row, index) => (
+    <tr key={index}>
+      <td>{row._id}</td>
       <td>{row.name}</td>
       <td>{row.job}</td>
       <td>
-        <button onClick={() => props.removeCharacter(row.id)}>Delete</button>
+        <button onClick={() => props.removeCharacter(row._id)}>Delete</button> 
       </td>
     </tr>
   ));
